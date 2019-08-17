@@ -74,7 +74,7 @@ class LoginForm(QWidget):
         confirm.clicked.connect(self.login)
 
         self.setLayout(grid)
-        self.resize(300, 130)
+        self.setFixedSize(300, 130)
         self.center()
         self.setWindowTitle('登录')
         self.setWindowIcon(QIcon(':/logo.ico'))
@@ -108,7 +108,11 @@ class LoginForm(QWidget):
         }
 
         # 登录信息提交
-        response = self.session.post(url + '/academic/j_acegi_security_check', params=params, headers=headers)
+        try:
+            response = self.session.post(url + '/academic/j_acegi_security_check', params=params, headers=headers)
+        except ConnectionError:
+            self.error.setText("未联网")
+            return
 
         # 提取登录错误信息
         soup = BeautifulSoup(response.text, 'html.parser')
